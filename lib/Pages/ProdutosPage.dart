@@ -6,6 +6,7 @@ import '../Services/ProdutoService.dart';
 class ProdutosPage extends StatefulWidget {
   final String baseUrl;
 
+
   ProdutosPage({required this.baseUrl});
 
   @override
@@ -13,22 +14,57 @@ class ProdutosPage extends StatefulWidget {
 }
 
 class _ProdutosPageState extends State<ProdutosPage> {
+  final loading = ValueNotifier(false);
+  final page = ValueNotifier(1);
+  final name = ValueNotifier('');
+  late final ScrollController _scrollController;
   List<Produto> listaProdutos = [];
   List<Produto> listaProdutosFiltrada = [];
   bool isSearching = false;
-  int page = 1;
-  final int limit = 10;
+
+  final int limit = 20;
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(infiniteScrolling);
     fetchData();
   }
 
-  fetchData() {
-    fetchProdutos(widget.baseUrl, page, limit).then((data) {
+  @override
+  void dispose()
+  {
+    super.dispose();
+    _scrollController.dispose();
+  }
+
+  infiniteScrolling()
+  async {
+    if(_scrollController.position.pixels == _scrollController.position.maxScrollExtent && !loading.value)
+    {
       setState(() {
-        listaProdutos = listaProdutosFiltrada = data;
+          page.value ++;
+          loading.value = true;
+        });
+      List<Produto> aux = await fetchProdutos(widget.baseUrl, page.value, limit, name.value);
+      if(aux.length > 0)
+      {
+        listaProdutosFiltrada.addAll(aux);
+        print('Tamanhho: '+listaProdutosFiltrada.length.toString());
+      }
+      setState(() {
+        loading.value = false;
+      });
+      
+    }
+
+  }
+
+  fetchData({String name =''}) {
+    fetchProdutos(widget.baseUrl, page.value, limit, name).then((data) {
+      setState(() {
+        listaProdutosFiltrada = data;
       });
     });
   }
@@ -39,29 +75,31 @@ class _ProdutosPageState extends State<ProdutosPage> {
     return result;
   }
 
-  void _searchProdutos(value) {
-    setState(() {
-      try {
-        if (onlyNumber(value)) {
-          listaProdutosFiltrada = listaProdutos
-              .where((pro) => pro.codigo
-                  .toString()
-                  .toUpperCase()
-                  .contains(value.toString().toUpperCase()))
-              .toList();
-        } else {
-          listaProdutosFiltrada = listaProdutos
-              .where((pro) => pro.nome
-                  .toUpperCase()
-                  .contains(value.toString().toUpperCase()))
-              .toList();
-        }
-      } catch (error) {
-        print(error);
-      }
-      if (listaProdutosFiltrada.length == 0) {
-        listaProdutosFiltrada = listaProdutos;
-      }
+  loadingIndicatorBuilder()
+  {
+    return ValueListenableBuilder(valueListenable: loading
+    , builder: (context, bool isLoading, _)
+    {
+      return (isLoading)
+      ?
+      Positioned(
+        left: (MediaQuery.of(context).size.width / 2),
+        bottom: 24,
+        child: const SizedBox(
+          width: 40,
+          height: 40,
+          child: CircleAvatar(
+            child: SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        ),
+        )
+        :
+        Container();
+
     });
   }
 
@@ -78,7 +116,12 @@ class _ProdutosPageState extends State<ProdutosPage> {
                       hintText: 'Pesquise aqui',
                       hintStyle: TextStyle(color: Colors.white)),
                   onChanged: (value) {
-                    _searchProdutos(value);
+                    fetchData(name: value);
+                    setState(() {
+                      name.value = value;
+                      page.value = 1;
+                    });
+                    
                   },
                 ),
           actions: <Widget>[
@@ -86,7 +129,10 @@ class _ProdutosPageState extends State<ProdutosPage> {
                 icon: !isSearching ? Icon(Icons.search) : Icon(Icons.cancel),
                 onPressed: () {
                   if (isSearching) {
-                    listaProdutosFiltrada = listaProdutos;
+                    fetchData();
+                    setState(() {
+                      page.value = 1;
+                    });
                   }
                   setState(() {
                     isSearching = !isSearching;
@@ -96,29 +142,40 @@ class _ProdutosPageState extends State<ProdutosPage> {
         ),
         body: Container(
             child: listaProdutosFiltrada.length > 0
-                ? ListView.builder(
-                    itemCount: listaProdutosFiltrada.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Card(
-                          elevation: 5,
-                          child: ListTile(
-                            key: Key(
-                                listaProdutosFiltrada[index].codigo.toString()),
-                            leading: Text(
-                                listaProdutosFiltrada[index].codigo.toString()),
-                            title: Text(listaProdutosFiltrada[index].nome),
-                            subtitle: Text(
-                                "Qtd. ${listaProdutosFiltrada[index].quantidade}"),
-                            trailing: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Text('Valor'),
-                                Text(
-                                    "R\$ ${listaProdutosFiltrada[index].valorv}")
-                              ],
-                            ),
-                          ));
-                    })
+                ?  Stack(
+                  children:[ ListView.builder(
+                        controller: _scrollController,
+                          itemCount: listaProdutosFiltrada.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Card(
+                                elevation: 5,
+                                child: ListTile(
+                                  key: Key(
+                                      listaProdutosFiltrada[index].codigo.toString()),
+                                  leading: Text(
+                                      listaProdutosFiltrada[index].codigo.toString()),
+                                  title: Text(listaProdutosFiltrada[index].nome),
+                                  subtitle: Text(
+                                    listaProdutosFiltrada[index].quantidade != null ?
+                                      "Qtd. ${listaProdutosFiltrada[index].quantidade}"
+                                      : ''),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text('Valor'),
+                                      Text(
+                                        listaProdutosFiltrada[index].valorv != null ?
+                                          "R\$ ${listaProdutosFiltrada[index].valorv}":
+                                          '')
+                                    ],
+                                  ),
+                                ),
+                                );
+                          }),
+                          loadingIndicatorBuilder()
+                          ],
+                )
+
                 : Center(child: CircularProgressIndicator())));
   }
 }
