@@ -49,57 +49,90 @@ class _ClienteDetailState extends State<ClienteDetail> {
                       valorCampo: dadosCliente.cliNome.toString()),
                   Campos(
                       nomeCampo: 'Tipo',
-                      valorCampo: dadosCliente.cliTipo.toString()),
+                      valorCampo: dadosCliente.cliTipo != null ?
+                      dadosCliente.cliTipo.toString()
+                      : ''),
                   Campos(
                       nomeCampo: 'CPF/CNPJ',
-                      valorCampo: dadosCliente.cliCpfCgc.toString()),
+                      valorCampo: 
+                      dadosCliente.cliCpfCgc != null ?
+                      dadosCliente.cliCpfCgc.toString()
+                      
+                      :'   .   .   -  '),
                   Campos(
                       nomeCampo: 'RG',
-                      valorCampo: dadosCliente.cliRg.toString()),
+                      valorCampo: dadosCliente.cliRg != null?
+                      dadosCliente.cliRg.toString()
+                      :''),
                   Campos(
                       nomeCampo: 'Carteira',
-                      valorCampo: dadosCliente.cliCarteira.toString()),
+                      valorCampo: dadosCliente.cliCarteira != null ?
+                      dadosCliente.cliCarteira.toString()
+                      : ''),
                   Campos(
                     nomeCampo: 'SPC',
-                    valorCampo: dadosCliente.cliSpc.toString(),
+                    valorCampo: dadosCliente.cliSpc != null ?
+                    dadosCliente.cliSpc.toString()
+                    : '4',
                     isSpc: true,
                   ),
                   Campos(
                     nomeCampo: 'Cheque do Cliente',
-                    valorCampo: dadosCliente.cliCheque.toString(),
+                    valorCampo: dadosCliente.cliCheque != null ?
+                    dadosCliente.cliCheque.toString()
+                    :'4',
                     isCheque: true,
                   ),
                   Campos(
                     nomeCampo: 'Estado Civil',
-                    valorCampo: dadosCliente.cliEstcivil.toString(),
+                    valorCampo: dadosCliente.cliEstcivil != null ?
+                    dadosCliente.cliEstcivil.toString()
+                    :'5',
                     isEstadoCivil: true,
                   ),
                   Campos(
                       nomeCampo: 'Fone',
-                      valorCampo: dadosCliente.cliFone.toString()),
+                      valorCampo: dadosCliente.cliFone != null ?
+                      dadosCliente.cliFone.toString()
+                      : '( )    -    '),
                   Campos(
                       nomeCampo: 'Endereco',
-                      valorCampo: dadosCliente.cliEndereco.toString()),
+                      valorCampo: dadosCliente.cliEndereco != null ?
+                      dadosCliente.cliEndereco.toString()
+                      :''),
                   Campos(
                       nomeCampo: 'Bairro',
-                      valorCampo: dadosCliente.cliBairro.toString()),
+                      valorCampo: dadosCliente.cliBairro != null ?
+                      dadosCliente.cliBairro.toString()
+                      :''),
                   Campos(
                       nomeCampo: 'Cidade',
-                      valorCampo: dadosCliente.cliCidade.toString()),
+                      valorCampo: dadosCliente.cliCidade != null?
+                      dadosCliente.cliCidade.toString()
+                      :''),
                   Campos(
                       nomeCampo: 'UF',
-                      valorCampo: dadosCliente.cliUf.toString()),
+                      valorCampo: dadosCliente.cliUf != null?
+                      dadosCliente.cliUf.toString()
+                      :''),
                   Campos(
                       nomeCampo: 'CEP',
-                      valorCampo: dadosCliente.cliCep.toString()),
+                      valorCampo: dadosCliente.cliCep != null ?
+                      dadosCliente.cliCep.toString()
+                      :'     -   '),
                   Campos(
                     nomeCampo: 'Data Cadastro',
-                    valorCampo: DateFormat('dd/MM/yyyy')
-                        .format(DateTime.parse(dadosCliente.cliDatac)),
+                    valorCampo: dadosCliente.cliDatac !=null ?
+                    DateFormat('dd/MM/yyyy')
+                        .format(DateTime.parse(dadosCliente.cliDatac!)
+                        )
+                        :'  /  /   '
                   ),
                   Campos(
                       nomeCampo: 'Nome Conjugue',
-                      valorCampo: dadosCliente.cliConjuge.toString()),
+                      valorCampo: dadosCliente.cliConjuge != null ?
+                      dadosCliente.cliConjuge.toString()
+                      :''),
                   Card(
                     elevation: 10,
                     child: Column(
@@ -111,19 +144,27 @@ class _ClienteDetailState extends State<ClienteDetail> {
                         ),
                         Campos(
                           nomeCampo: 'Nome',
-                          valorCampo: dadosCliente.cliAvalista.toString(),
+                          valorCampo: dadosCliente.cliAvalista != null ?
+                          dadosCliente.cliAvalista.toString()
+                          :'',
                         ),
                         Campos(
                           nomeCampo: 'CPF',
-                          valorCampo: dadosCliente.cliCpfa.toString(),
+                          valorCampo: dadosCliente.cliCpfa != null ?
+                          dadosCliente.cliCpfa.toString()
+                          :'   .   .   -  ',
                         ),
                         Campos(
                           nomeCampo: 'RG',
-                          valorCampo: dadosCliente.cliRga.toString(),
+                          valorCampo: dadosCliente.cliRga != null ?
+                          dadosCliente.cliRga.toString()
+                          :'',
                         ),
                         Campos(
                           nomeCampo: 'Fone',
-                          valorCampo: dadosCliente.cliFonea.toString(),
+                          valorCampo: dadosCliente.cliFonea != null ?
+                          dadosCliente.cliRga.toString()
+                          : '( )    -    ',
                         ),
                       ],
                     ),
@@ -150,9 +191,9 @@ class Campos extends StatelessWidget {
       this.isCheque = false,
       this.isEstadoCivil = false})
       : super(key: key);
-  final List<String> spc = ['NC', 'NEG', 'S/C'];
-  final List<String> cheque = ['NC', 'CR', 'BL'];
-  final List<String> estadoCivil = ['CAS.', 'SOLT.', 'VIUVO', 'SEP.'];
+  final List<String> spc = ['NC', 'NEG', 'S/C', ''];
+  final List<String> cheque = ['NC', 'CR', 'BL', ''];
+  final List<String> estadoCivil = ['CAS.', 'SOLT.', 'VIUVO', 'SEP.', ''];
 
   @override
   Widget build(BuildContext context) {

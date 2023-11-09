@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     isAdjusting = false;
     _prefs.then((SharedPreferences prefs) {
-      return (prefs.getString(('ip') ?? ""));
+      return (prefs.getString(('ip')));
     }).then((value) => ip = value);
   }
 
@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Moveis kill Consultas'),
+          title: Text('Mais Moveis Consultas'),
           actions: <Widget>[
             IconButton(
               icon: !isAdjusting ? Icon(Icons.settings) : Icon(Icons.cancel),
