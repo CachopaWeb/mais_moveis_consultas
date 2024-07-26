@@ -6,7 +6,6 @@ import '../Services/ProdutoService.dart';
 class ProdutosPage extends StatefulWidget {
   final String baseUrl;
 
-
   ProdutosPage({required this.baseUrl});
 
   @override
@@ -33,40 +32,36 @@ class _ProdutosPageState extends State<ProdutosPage> {
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     super.dispose();
     _scrollController.dispose();
   }
 
-  infiniteScrolling()
-  async {
-    if(_scrollController.position.pixels == _scrollController.position.maxScrollExtent && !loading.value)
-    {
+  infiniteScrolling() async {
+    if (_scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent &&
+        !loading.value) {
       setState(() {
-          page.value ++;
-          loading.value = true;
-        });
-      List<Produto> aux = await fetchProdutos(widget.baseUrl, page.value, limit, name.value);
-      if(aux.length > 0)
-      {
+        page.value++;
+        loading.value = true;
+      });
+      List<Produto> aux =
+          await fetchProdutos(widget.baseUrl, page.value, limit, name.value);
+      if (aux.length > 0) {
         listaProdutosFiltrada.addAll(aux);
-        print('Tamanhho: '+listaProdutosFiltrada.length.toString());
       }
       setState(() {
         loading.value = false;
       });
-      
     }
-
   }
 
-  fetchData({String name =''}) {
+  fetchData({String name = ''}) {
     fetchProdutos(widget.baseUrl, page.value, limit, name).then((data) {
       setState(() {
         listaProdutosFiltrada = data;
       });
-    });
+    }).catchError((e) => print(e));
   }
 
   bool onlyNumber(String value) {
@@ -75,32 +70,28 @@ class _ProdutosPageState extends State<ProdutosPage> {
     return result;
   }
 
-  loadingIndicatorBuilder()
-  {
-    return ValueListenableBuilder(valueListenable: loading
-    , builder: (context, bool isLoading, _)
-    {
-      return (isLoading)
-      ?
-      Positioned(
-        left: (MediaQuery.of(context).size.width / 2),
-        bottom: 24,
-        child: const SizedBox(
-          width: 40,
-          height: 40,
-          child: CircleAvatar(
-            child: SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(),
-            ),
-          ),
-        ),
-        )
-        :
-        Container();
-
-    });
+  loadingIndicatorBuilder() {
+    return ValueListenableBuilder(
+        valueListenable: loading,
+        builder: (context, bool isLoading, _) {
+          return (isLoading)
+              ? Positioned(
+                  left: (MediaQuery.of(context).size.width / 2),
+                  bottom: 24,
+                  child: const SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: CircleAvatar(
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  ),
+                )
+              : Container();
+        });
   }
 
   @override
@@ -121,7 +112,6 @@ class _ProdutosPageState extends State<ProdutosPage> {
                       name.value = value;
                       page.value = 1;
                     });
-                    
                   },
                 ),
           actions: <Widget>[
@@ -142,40 +132,43 @@ class _ProdutosPageState extends State<ProdutosPage> {
         ),
         body: Container(
             child: listaProdutosFiltrada.length > 0
-                ?  Stack(
-                  children:[ ListView.builder(
-                        controller: _scrollController,
+                ? Stack(
+                    children: [
+                      ListView.builder(
+                          controller: _scrollController,
                           itemCount: listaProdutosFiltrada.length,
                           itemBuilder: (BuildContext context, int index) {
                             return Card(
-                                elevation: 5,
-                                child: ListTile(
-                                  key: Key(
-                                      listaProdutosFiltrada[index].codigo.toString()),
-                                  leading: Text(
-                                      listaProdutosFiltrada[index].codigo.toString()),
-                                  title: Text(listaProdutosFiltrada[index].nome),
-                                  subtitle: Text(
-                                    listaProdutosFiltrada[index].quantidade != null ?
-                                      "Qtd. ${listaProdutosFiltrada[index].quantidade}"
-                                      : ''),
-                                  trailing: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text('Valor'),
-                                      Text(
-                                        listaProdutosFiltrada[index].valorv != null ?
-                                          "R\$ ${listaProdutosFiltrada[index].valorv}":
-                                          '')
-                                    ],
-                                  ),
+                              elevation: 5,
+                              child: ListTile(
+                                key: Key(listaProdutosFiltrada[index]
+                                    .codigo
+                                    .toString()),
+                                leading: Text(listaProdutosFiltrada[index]
+                                    .codigo
+                                    .toString()),
+                                title: Text(listaProdutosFiltrada[index].nome),
+                                subtitle: Text(listaProdutosFiltrada[index]
+                                            .quantidade !=
+                                        null
+                                    ? "Qtd. ${listaProdutosFiltrada[index].quantidade}"
+                                    : ''),
+                                trailing: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text('Valor'),
+                                    Text(listaProdutosFiltrada[index].valorv !=
+                                            null
+                                        ? "R\$ ${listaProdutosFiltrada[index].valorv}"
+                                        : '')
+                                  ],
                                 ),
-                                );
+                              ),
+                            );
                           }),
-                          loadingIndicatorBuilder()
-                          ],
-                )
-
+                      loadingIndicatorBuilder()
+                    ],
+                  )
                 : Center(child: CircularProgressIndicator())));
   }
 }

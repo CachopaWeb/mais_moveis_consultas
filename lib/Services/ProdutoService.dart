@@ -4,14 +4,18 @@ import 'package:dio/dio.dart';
 
 import '../Models/Produto.dart';
 
-Future<List<Produto>> fetchProdutos(String baseUrl, int page, int limit, String nome) async {
+Future<List<Produto>> fetchProdutos(
+    String baseUrl, int page, int limit, String nome) async {
   BaseOptions options = new BaseOptions(
-    contentType: 'application/json'
+    baseUrl: baseUrl,
+    connectTimeout: Duration(minutes: 5),
+    receiveTimeout: Duration(minutes: 3),
   );
 
   try {
-    Dio dio = new Dio();
-    final response = await dio.get('$baseUrl/produtos?page=$page&limit=$limit&nome=$nome');
+    Dio dio = new Dio(options);
+    final response =
+        await dio.get('/produtos?page=$page&limit=$limit&nome=$nome');
     final lista = response.data as List;
     print(lista);
     final resultado = lista.map((json) => Produto.fromMap(json)).toList();

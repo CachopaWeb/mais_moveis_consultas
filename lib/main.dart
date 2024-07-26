@@ -21,9 +21,25 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Mk Consultas',
       theme: ThemeData(
-        primarySwatch: Colors.red,
+        appBarTheme: AppBarTheme(
+          color: Colors.red,
+          centerTitle: true,
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+          ),
+        ),
+        buttonTheme: ButtonThemeData(
+          buttonColor: Colors.red,
+        ),
+        textTheme: TextTheme(
+            titleMedium: TextStyle(
+          fontSize: 16,
+          color: Colors.white,
+        )),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      themeMode: ThemeMode.dark,
       home: HomePage(),
     );
   }
@@ -62,7 +78,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Mais Moveis Consultas'),
+          title: Text('Moveis Kill Consultas'),
           actions: <Widget>[
             IconButton(
               icon: !isAdjusting ? Icon(Icons.settings) : Icon(Icons.cancel),
@@ -82,7 +98,7 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               !isAdjusting
                   ? Opacity(
-                      child: Image.asset(ConstsApp.imgLogo),
+                      child: Image.asset(ConstsApp.imgLogoMoveisKill),
                       opacity: 0.5,
                     )
                   : TextFormField(
@@ -116,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                               colors: [Colors.redAccent, Colors.orangeAccent]),
                           borderRadius: BorderRadius.all(Radius.circular(5))),
                       child: SizedBox.expand(
-                          child: ElevatedButton(
+                          child: TextButton(
                         onPressed: () {
                           Navigator.push(context,
                               CupertinoPageRoute(builder: (_) {
@@ -127,7 +143,10 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Icon(Icons.phonelink_setup),
-                            Text('Produtos')
+                            Text(
+                              'Produtos',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            )
                           ],
                         ),
                       )),
@@ -150,7 +169,7 @@ class _HomePageState extends State<HomePage> {
                               colors: [Colors.redAccent, Colors.orangeAccent]),
                           borderRadius: BorderRadius.all(Radius.circular(5))),
                       child: SizedBox.expand(
-                          child: ElevatedButton(
+                          child: TextButton(
                         onPressed: () {
                           Navigator.push(context,
                               CupertinoPageRoute(builder: (context) {
@@ -163,7 +182,10 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Icon(Icons.person_pin),
-                            Text('Clientes')
+                            Text(
+                              'Clientes',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            )
                           ],
                         ),
                       )),
